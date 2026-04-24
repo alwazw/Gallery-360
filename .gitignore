@@ -3,5 +3,19 @@ node_modules/
 out/
 build/
 dist/
-.env*
 .DS_Store
+
+# Environment files (keep examples)
+.env
+.env.*
+!example.env
+!example.secrets
+
+# Secrets (never commit)
+.secrets
+.secrets.*
+*.pem
+*.key
+
+# Test media (local only)
+public/test-media/
