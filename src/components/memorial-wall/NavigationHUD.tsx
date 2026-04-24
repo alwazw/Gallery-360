@@ -15,9 +15,11 @@ import {
   EyeOff,
   User,
   BookOpen,
-  Sparkles
+  Sparkles,
+  Upload
 } from "lucide-react";
 import { AIPanel } from "./AIPanel";
+import { ContributionPortal } from "../contribution/ContributionPortal";
 
 // Filter panel component
 function FilterPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -232,6 +234,7 @@ function ShareButton() {
 export function NavigationHUD() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [isContributionOpen, setIsContributionOpen] = useState(false);
   const { filters, media, filteredMedia } = useMemorialStore();
   
   const hasActiveFilters = Object.values(filters).some(v => v !== undefined);
@@ -298,12 +301,28 @@ export function NavigationHUD() {
             />
           </div>
 
+          {/* Contribute button */}
+          <button
+            onClick={() => setIsContributionOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-sm font-medium transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            <span className="hidden sm:inline">Contribute</span>
+          </button>
+
           <ShareButton />
         </div>
       </div>
 
       {/* AI Panel */}
       <AIPanel isOpen={isAIPanelOpen} onClose={() => setIsAIPanelOpen(false)} />
+      
+      {/* Contribution Portal */}
+      <ContributionPortal 
+        isOpen={isContributionOpen} 
+        onClose={() => setIsContributionOpen(false)}
+        memorialName="Memorial Wall"
+      />
 
       {/* Active filter pills */}
       {hasActiveFilters && (

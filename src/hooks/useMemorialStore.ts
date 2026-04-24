@@ -33,6 +33,8 @@ interface MemorialState {
   clearFilters: () => void;
   setKnownFaces: (faces: MemorialState['knownFaces']) => void;
   setChapters: (chapters: string[]) => void;
+  addMemoryToMedia: (mediaId: string, memory: import('@/types/media').Memory) => void;
+  updateMediaItem: (mediaId: string, updates: Partial<MediaItem>) => void;
   
   // Computed
   getActiveMedia: () => MediaItem | undefined;
@@ -79,6 +81,33 @@ export const useMemorialStore = create<MemorialState>((set, get) => ({
   setKnownFaces: (knownFaces) => set({ knownFaces }),
   
   setChapters: (chapters) => set({ chapters }),
+  
+  addMemoryToMedia: (mediaId, memory) => {
+    const { media, filters } = get();
+    const updatedMedia = media.map(item => {
+      if (item.id === mediaId) {
+        return {
+          ...item,
+          memories: [...(item.memories || []), memory],
+        };
+      }
+      return item;
+    });
+    const filteredMedia = applyFilters(updatedMedia, filters);
+    set({ media: updatedMedia, filteredMedia });
+  },
+  
+  updateMediaItem: (mediaId, updates) => {
+    const { media, filters } = get();
+    const updatedMedia = media.map(item => {
+      if (item.id === mediaId) {
+        return { ...item, ...updates };
+      }
+      return item;
+    });
+    const filteredMedia = applyFilters(updatedMedia, filters);
+    set({ media: updatedMedia, filteredMedia });
+  },
   
   getActiveMedia: () => {
     const { media, activeId } = get();

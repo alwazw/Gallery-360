@@ -21,53 +21,81 @@ function isMediaFile(filename: string): boolean {
   return [...IMAGE_EXTENSIONS, ...VIDEO_EXTENSIONS, ...DOCUMENT_EXTENSIONS].includes(ext);
 }
 
+function scanDirectory(dir: string, prefix: string, usePublicPath: boolean = false): Array<{
+  id: string;
+  name: string;
+  title: string;
+  type: 'image' | 'video' | 'document';
+  url: string;
+  size: number;
+  modified: string;
+  visibility: 'public';
+}> {
+  if (!fs.existsSync(dir)) return [];
+
+  const files = fs.readdirSync(dir);
+  return files
+    .filter(file => {
+      if (file.startsWith('.')) return false;
+      return isMediaFile(file);
+    })
+    .map((file, index) => {
+      const ext = path.extname(file).toLowerCase();
+      const type = getFileType(ext);
+      const stats = fs.statSync(path.join(dir, file));
+
+      return {
+        id: `${prefix}-${index}-${file.replace(/[^a-zA-Z0-9]/g, '-')}`,
+        name: file,
+        title: path.basename(file, ext).replace(/[-_]/g, ' '),
+        type,
+        url: usePublicPath 
+          ? `/test-media/${encodeURIComponent(file)}`
+          : `/api/local-media/serve?file=${encodeURIComponent(file)}`,
+        size: stats.size,
+        modified: stats.mtime.toISOString(),
+        visibility: 'public' as const,
+      };
+    });
+}
+
 export async function GET() {
   try {
-    const mediaDir = path.join(os.homedir(), 'temp', 'media');
+    // Primary: ~/temp/media directory
+    const localMediaDir = path.join(os.homedir(), 'temp', 'media');
+    
+    // Fallback: public/test-media directory (bundled test assets)
+    const testMediaDir = path.join(process.cwd(), 'public', 'test-media');
 
-    // Create directory if it doesn't exist (for development convenience)
-    if (!fs.existsSync(mediaDir)) {
+    // Create local directory if it doesn't exist
+    if (!fs.existsSync(localMediaDir)) {
       try {
-        fs.mkdirSync(mediaDir, { recursive: true });
-        console.log(`Created media directory: ${mediaDir}`);
+        fs.mkdirSync(localMediaDir, { recursive: true });
+        console.log(`Created media directory: ${localMediaDir}`);
       } catch (mkdirError) {
-        console.log(`Could not create media directory: ${mediaDir}`);
+        console.log(`Could not create media directory: ${localMediaDir}`);
       }
-      return NextResponse.json({ 
-        files: [],
-        message: `Media directory created at ${mediaDir}. Add files to see them in the gallery.`
-      });
     }
 
-    const files = fs.readdirSync(mediaDir);
-    const mediaFiles = files
-      .filter(file => {
-        // Filter out hidden files and non-media files
-        if (file.startsWith('.')) return false;
-        return isMediaFile(file);
-      })
-      .map((file, index) => {
-        const ext = path.extname(file).toLowerCase();
-        const type = getFileType(ext);
-        const stats = fs.statSync(path.join(mediaDir, file));
+    // Scan both directories
+    const localFiles = scanDirectory(localMediaDir, 'local', false);
+    const testFiles = scanDirectory(testMediaDir, 'test', true);
 
-        return {
-          id: `local-${index}-${file.replace(/[^a-zA-Z0-9]/g, '-')}`,
-          name: file,
-          title: path.basename(file, ext).replace(/[-_]/g, ' '),
-          type,
-          url: `/api/local-media/serve?file=${encodeURIComponent(file)}`,
-          size: stats.size,
-          modified: stats.mtime.toISOString(),
-          visibility: 'public' as const,
-        };
-      })
+    // Combine and sort by modified date
+    const allFiles = [...localFiles, ...testFiles]
       .sort((a, b) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
 
     return NextResponse.json({ 
-      files: mediaFiles,
-      directory: mediaDir,
-      count: mediaFiles.length
+      files: allFiles,
+      directories: {
+        local: localMediaDir,
+        test: testMediaDir
+      },
+      counts: {
+        local: localFiles.length,
+        test: testFiles.length,
+        total: allFiles.length
+      }
     });
   } catch (error) {
     console.error('Error reading local media:', error);

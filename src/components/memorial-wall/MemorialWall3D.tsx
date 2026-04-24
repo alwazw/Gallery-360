@@ -175,7 +175,6 @@ function MemorialTitle() {
         color="#e2e8f0"
         anchorX="left"
         anchorY="middle"
-        font="/fonts/Inter-Bold.ttf"
       >
         In Loving Memory
       </Text>
@@ -185,7 +184,6 @@ function MemorialTitle() {
         color="#94a3b8"
         anchorX="left"
         anchorY="middle"
-        font="/fonts/Inter-Regular.ttf"
       >
         A celebration of life through shared memories
       </Text>
@@ -215,7 +213,6 @@ function LoadingIndicator() {
         color="#94a3b8"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/Inter-Regular.ttf"
       >
         Loading memories...
       </Text>
@@ -233,7 +230,6 @@ function EmptyState() {
         color="#e2e8f0"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/Inter-Bold.ttf"
       >
         No Memories Yet
       </Text>
@@ -243,7 +239,6 @@ function EmptyState() {
         color="#94a3b8"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/Inter-Regular.ttf"
         maxWidth={8}
         textAlign="center"
       >

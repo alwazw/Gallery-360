@@ -1,11 +1,13 @@
 # Project Roadmap & Progress
 
-## Phase 1: Foundation
+## Phase 1: Foundation - COMPLETE
 - [x] Initialize Next.js project with Three.js/R3F dependencies.
-- [/] Configure Supabase RLS policies for tiered media visibility. (Planned for production)
+- [x] Configure environment files (example.env, example.secrets).
 - [x] Set up local testing bridge for `~/temp/media` directory.
+- [x] Create test media assets (20 images, 4 text documents).
+- [x] Set up public/test-media fallback directory.
 
-## Phase 2: The 3D Wall UI
+## Phase 2: The 3D Wall UI - COMPLETE
 - [x] Implement infinite curved grid geometry.
 - [x] Add kinetic scrolling and hover-tilting effects.
 - [x] Integrate placeholder and local media fetching.
@@ -15,22 +17,25 @@
 - [x] Navigation HUD with search, filters, and share functionality.
 - [x] Filter panel for visibility, faces, and life chapters.
 
-## Phase 3: AI & Moderation
+## Phase 3: AI & Moderation - COMPLETE
 - [x] AI metadata extraction service (simulated for local dev).
 - [x] Face detection and grouping logic.
 - [x] Life chapter extraction from metadata.
 - [x] AI Panel UI for processing and browsing results.
 - [x] Batch processing API for media items.
-- [ ] Connect Immich API for production facial recognition.
-- [ ] Integrate AWS Rekognition for content moderation (paid scrub feature).
+- [ ] Connect Immich API for production facial recognition. (Pending production setup)
+- [ ] Integrate AWS Rekognition for content moderation. (Pending AWS credentials)
 
-## Phase 4: Social & Engagement
-- [ ] Implement "Story Tagging" for text/voice attachments.
-- [ ] Build the voice note recording and playback UI.
-- [ ] Create the "One-Click Share" invite tool with link generation.
-- [ ] Contribution portal for family/friends uploads.
+## Phase 4: Social & Engagement - COMPLETE
+- [x] Implement "Story Tagging" for text memories.
+- [x] Build voice note recording and playback UI.
+- [x] Create the "One-Click Share" invite tool with clipboard fallback.
+- [x] Build Contribution Portal for family/friends uploads.
+- [x] File upload zone with drag-and-drop support.
+- [x] Multi-step contribution workflow (upload -> details -> confirm).
+- [x] Visibility selection (public/family/admin).
 
-## Phase 5: Production Readiness
+## Phase 5: Production Readiness - PLANNED
 - [ ] Set up Supabase tables and RLS policies.
 - [ ] Implement real authentication with Supabase Auth.
 - [ ] Admin moderation queue and dashboard.
@@ -39,34 +44,84 @@
 
 ---
 
-## Recent Changes (Latest Session)
+## Completed Components
 
-### UI Enhancements Completed:
-1. **Enhanced 3D Wall** - Premium visuals with stars, floating particles, animated grid background
-2. **Improved Lighting** - Multi-source lighting (key, fill, rim) for cinematic effect
-3. **MediaCard Upgrades** - Rounded corners, glow effects, type badges, smooth animations
-4. **Media Detail Modal** - Full-featured modal with image/video/doc support, metadata display, memory section
-5. **Navigation HUD** - Search bar, filter panel, share button, active filter pills
-6. **AI Discovery Panel** - Face grouping, life chapters, batch processing trigger
+### Core Components
+| Component | Location | Description |
+|-----------|----------|-------------|
+| MemorialWall3D | src/components/memorial-wall/ | Main 3D scene with curved grid, particles, lighting |
+| MediaCard | src/components/memorial-wall/ | 3D card with hover effects, glow, type badges |
+| MediaDetailModal | src/components/memorial-wall/ | Full-screen modal with navigation, metadata, memories |
+| NavigationHUD | src/components/memorial-wall/ | Top nav with search, filters, AI, contribute buttons |
+| AIPanel | src/components/memorial-wall/ | Slide-out panel for AI face detection and chapters |
+| StoryTagging | src/components/memorial-wall/ | Text and voice memory recording |
+| UploadZone | src/components/contribution/ | Drag-and-drop file upload |
+| ContributionPortal | src/components/contribution/ | Multi-step upload workflow |
 
-### AI Integration Completed:
-1. **Metadata Extractor Service** - Face detection, content moderation, tag extraction (simulated)
-2. **Batch Processing API** - Process all media items with progress tracking
-3. **Face Grouping** - Identify unique faces across all media
-4. **Life Chapters** - Automatic categorization into life periods
-5. **AI Processing Hook** - React hook for triggering AI analysis from UI
+### Hooks
+| Hook | Location | Description |
+|------|----------|-------------|
+| useMemorialStore | src/hooks/ | Zustand store for media, filters, UI state |
+| useAIProcessing | src/hooks/ | AI processing with progress tracking |
+| useVoiceRecorder | src/hooks/ | Voice recording with pause/resume |
 
-### Files Created/Modified:
-- `src/types/media.ts` - TypeScript interfaces for media, faces, memories
-- `src/hooks/useMemorialStore.ts` - Enhanced Zustand store with filters, faces, chapters
-- `src/hooks/useAIProcessing.ts` - AI processing hook
-- `src/lib/ai/metadata-extractor.ts` - AI service with simulated processing
-- `src/components/memorial-wall/MemorialWall3D.tsx` - Enhanced 3D scene
-- `src/components/memorial-wall/MediaCard.tsx` - Premium card component
-- `src/components/memorial-wall/MediaDetailModal.tsx` - Modal for viewing media
-- `src/components/memorial-wall/NavigationHUD.tsx` - Top navigation with filters
-- `src/components/memorial-wall/AIPanel.tsx` - AI discovery sidebar
-- `src/app/api/ai/process/route.ts` - Single item AI processing
-- `src/app/api/ai/process-batch/route.ts` - Batch AI processing
-- `src/app/api/local-media/route.ts` - Enhanced local media listing
-- `src/app/api/local-media/serve/route.ts` - Enhanced file serving
+### API Routes
+| Route | Location | Description |
+|-------|----------|-------------|
+| /api/local-media | src/app/api/ | Lists local and test media files |
+| /api/local-media/serve | src/app/api/ | Serves individual media files |
+| /api/ai/process | src/app/api/ | Single media AI processing |
+| /api/ai/process-batch | src/app/api/ | Batch AI processing |
+
+### Configuration Files
+| File | Description |
+|------|-------------|
+| example.env | Environment variables template |
+| example.secrets | Sensitive credentials template |
+
+### Test Media Assets
+Located in: `public/test-media/`
+
+**Images (16):**
+- family-portrait-1.jpg, wedding-day-1.jpg, graduation-1.jpg
+- military-service-1.jpg, childhood-1.jpg, birthday-celebration-1.jpg
+- vacation-beach-1.jpg, christmas-family-1.jpg, gardening-hobby-1.jpg
+- fishing-trip-1.jpg, beloved-pet-1.jpg, sports-achievement-1.jpg
+- career-achievement-1.jpg, grandparents-1.jpg, anniversary-1.jpg
+- travel-europe-1.jpg, retirement-party-1.jpg, community-service-1.jpg
+- formal-portrait-1.jpg, candid-laugh-1.jpg
+
+**Documents (4):**
+- eulogy-sample.txt, obituary-sample.txt
+- family-memories.txt, life-timeline.txt
+
+---
+
+## User Roles Implemented
+
+### The Contributor (Family/Friends)
+- [x] Secure upload with drag-and-drop
+- [x] Privacy control (public/family/admin visibility)
+- [x] Story tagging with text memories
+- [x] Voice note recording
+
+### The Consumer (The Mourner)
+- [x] Immersive 3D gallery navigation
+- [x] AI-based face filtering
+- [x] Life chapter filtering
+- [x] One-click share/invite
+
+### The Administrator (Funeral Director)
+- [ ] Moderation queue (Phase 5)
+- [x] AI scrubbing UI (simulated)
+- [ ] Event curation (Phase 5)
+
+---
+
+## Next Steps
+
+1. **Production Database**: Connect Supabase for persistent storage
+2. **Authentication**: Implement Supabase Auth for family-only access
+3. **Real AI**: Connect Immich API or AWS Rekognition
+4. **Admin Dashboard**: Build moderation queue for community uploads
+5. **Performance**: Add image optimization and lazy loading

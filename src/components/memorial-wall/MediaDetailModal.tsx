@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useMemorialStore } from "@/hooks/useMemorialStore";
-import { X, Share2, MessageCircle, Download, ChevronLeft, ChevronRight, Play, FileText, User, Calendar, MapPin, Tag } from "lucide-react";
-import type { MediaItem } from "@/types/media";
+import { StoryTagging } from "./StoryTagging";
+import { X, Share2, MessageCircle, Download, ChevronLeft, ChevronRight, Play, FileText, User, Calendar, MapPin, Tag, Plus } from "lucide-react";
+import type { MediaItem, Memory } from "@/types/media";
 
 interface MediaDetailModalProps {
   media: MediaItem | undefined;
@@ -135,13 +136,21 @@ function MetadataSection({ media }: { media: MediaItem }) {
   );
 }
 
-function MemoriesSection({ media }: { media: MediaItem }) {
+interface MemoriesSectionProps {
+  media: MediaItem;
+  onAddMemory: () => void;
+}
+
+function MemoriesSection({ media, onAddMemory }: MemoriesSectionProps) {
   if (!media.memories || media.memories.length === 0) {
     return (
       <div className="text-center py-8">
         <MessageCircle className="w-10 h-10 text-slate-600 mx-auto mb-3" />
         <p className="text-slate-500 text-sm">No memories shared yet</p>
-        <button className="mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition-colors">
+        <button 
+          onClick={onAddMemory}
+          className="mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition-colors"
+        >
           Add a Memory
         </button>
       </div>
@@ -168,12 +177,29 @@ function MemoriesSection({ media }: { media: MediaItem }) {
           )}
         </div>
       ))}
+      
+      {/* Add more button */}
+      <button
+        onClick={onAddMemory}
+        className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-slate-600 hover:border-indigo-500 rounded-lg text-slate-400 hover:text-indigo-400 transition-colors"
+      >
+        <Plus className="w-4 h-4" />
+        Add Another Memory
+      </button>
     </div>
   );
 }
 
 export function MediaDetailModal({ media }: MediaDetailModalProps) {
-  const { isModalOpen, setModalOpen, setActiveId, filteredMedia, activeId } = useMemorialStore();
+  const { isModalOpen, setModalOpen, setActiveId, filteredMedia, activeId, addMemoryToMedia } = useMemorialStore();
+  const [showStoryTagging, setShowStoryTagging] = useState(false);
+
+  const handleMemoryAdded = (memory: Memory) => {
+    if (media) {
+      addMemoryToMedia(media.id, memory);
+    }
+    setShowStoryTagging(false);
+  };
 
   const currentIndex = filteredMedia.findIndex(m => m.id === activeId);
   const canGoPrev = currentIndex > 0;
@@ -286,7 +312,19 @@ export function MediaDetailModal({ media }: MediaDetailModalProps) {
                 <MessageCircle className="w-4 h-4" />
                 Shared Memories
               </h4>
-              <MemoriesSection media={media} />
+              
+              {showStoryTagging ? (
+                <StoryTagging
+                  mediaId={media.id}
+                  onMemoryAdded={handleMemoryAdded}
+                  onClose={() => setShowStoryTagging(false)}
+                />
+              ) : (
+                <MemoriesSection 
+                  media={media} 
+                  onAddMemory={() => setShowStoryTagging(true)} 
+                />
+              )}
             </div>
 
             {/* Visibility indicator */}
